@@ -4,14 +4,14 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
   outputs = {self, nixpkgs} : {
-    defaultPackage.aarch64-darwin =
+    packages.aarch64-darwin.default =
       with import nixpkgs { system = "aarch64-darwin"; };
       stdenv.mkDerivation {
         pname = "prover9";
         version = "2009-11a";
 
         src = fetchurl {
-          url = "https://www.cs.unm.edu/~mccune/mace4/download/LADR-2009-11A.tar.gz";
+          url = "https://www.cs.unm.edu/~mccune/prover9/download/LADR-2009-11A.tar.gz";
           sha256 = "1l2i3d3h5z7nnbzilb6z92r0rbx0kh6yaxn2c5qhn3000xcfsay3";
         };
 
@@ -21,10 +21,13 @@
           RM=$(type -tp rm)
           MV=$(type -tp mv)
           CP=$(type -tp cp)
+          CC=$(type -tp clang)
           for f in Makefile */Makefile; do
             substituteInPlace $f --replace "/bin/rm" "$RM" \
               --replace "/bin/mv" "$MV" \
-              --replace "/bin/cp" "$CP";
+              --replace "/bin/cp" "$CP" \
+              --replace "gcc" "$CC";
+
           done
         '';
 
@@ -46,8 +49,9 @@
             for first-order and equational logic. Prover9 is a successor of
             the Otter Prover. This is the LADR command-line version.
           '';
-          platforms = platforms.linux;
+          platforms = platforms.darwin;
           maintainers = with maintainers; [ ];
+        };
       };
   };
 }
